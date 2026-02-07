@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState, use } from "react"; // Added 'use' import
+import { useEffect, useState, use } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import confetti from "canvas-confetti";
 import { supabase } from "@/lib/supabase";
@@ -35,6 +36,8 @@ const themes: Record<string, { bg: string; card: string; text: string; accent: s
 
 export default function DynamicCardPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = use(params);
+    const searchParams = useSearchParams();
+    const isPreview = searchParams.get('preview') === 'true';
     const [cardData, setCardData] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [response, setResponse] = useState<"pending" | "yes">("pending");
@@ -126,21 +129,12 @@ export default function DynamicCardPage({ params }: { params: Promise<{ id: stri
                 <div className="absolute top-1/3 right-1/3 text-2xl opacity-20 animate-float" style={{ animationDelay: '2s' }}>💝</div>
                 <div className="absolute bottom-20 right-10 text-4xl opacity-15 animate-float-delayed" style={{ animationDelay: '1.5s' }}>💘</div>
             </div>
-            <nav className="fixed top-0 left-0 w-full p-4 flex justify-between items-center z-10">
+            <nav className="fixed top-0 left-0 w-full p-4 flex justify-start items-center z-10">
                 <Link href="/" className="bg-white/50 p-2 rounded-full hover:bg-white/80 transition shadow-sm backdrop-blur-sm">
                     <svg className={`w-6 h-6 ${theme.text}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                     </svg>
                 </Link>
-                <button
-                    onClick={handleShare}
-                    className="px-4 py-2 bg-white/50 rounded-full text-sm font-medium hover:bg-white/80 transition shadow-sm backdrop-blur-sm flex items-center gap-2 text-rose-950"
-                >
-                    <span>Share</span>
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-                    </svg>
-                </button>
             </nav>
 
             <div className={`w-full max-w-md p-8 md:p-12 rounded-3xl shadow-2xl border ${theme.card} text-center relative overflow-hidden transition-all duration-500 animate-fade-in`} style={{ animationDelay: '0.2s' }}>
@@ -171,31 +165,51 @@ export default function DynamicCardPage({ params }: { params: Promise<{ id: stri
                             {cardData.message}
                         </p>
 
-                        <div className="flex flex-col gap-4 items-center justify-center relative h-32 animate-fade-in" style={{ animationDelay: '0.7s' }}>
-                            <button
-                                onClick={handleYes}
-                                className={`px-10 py-4 ${theme.button} ${theme.buttonText} rounded-full text-xl font-bold shadow-lg transform hover:scale-110 active:scale-95 transition-all duration-200 z-10 w-full md:w-auto`}
-                            >
-                                YES! 💖
-                            </button>
+                        {isPreview ? (
+                            <div className="flex flex-col gap-4 items-center justify-center animate-fade-in" style={{ animationDelay: '0.7s' }}>
+                                <div className={`px-8 py-4 ${theme.card} border-2 border-dashed ${theme.text} rounded-xl text-center opacity-60`}>
+                                    <p className="text-sm font-medium">✨ Preview Mode ✨</p>
+                                    <p className="text-xs mt-1">Share this link with your valentine to see their response!</p>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="flex flex-col gap-4 items-center justify-center relative h-32 animate-fade-in" style={{ animationDelay: '0.7s' }}>
+                                <button
+                                    onClick={handleYes}
+                                    className={`px-10 py-4 ${theme.button} ${theme.buttonText} rounded-full text-xl font-bold shadow-lg transform hover:scale-110 active:scale-95 transition-all duration-200 z-10 w-full md:w-auto`}
+                                >
+                                    YES! 💖
+                                </button>
 
-                            <button
-                                onMouseEnter={handleNoHover}
-                                onClick={handleNoHover}
-                                style={{
-                                    transform: `translate(${noPosition.x}px, ${noPosition.y}px)`,
-                                    transition: isNoHovered ? 'transform 0.2s ease-out' : 'none'
-                                }}
-                                className={`px-6 py-2 bg-gray-200 text-gray-500 rounded-full text-sm font-medium hover:bg-gray-300 transition-colors absolute bottom-0 ${isNoHovered ? '' : 'relative'}`}
-                            >
-                                No
-                            </button>
-                        </div>
+                                <button
+                                    onMouseEnter={handleNoHover}
+                                    onClick={handleNoHover}
+                                    style={{
+                                        transform: `translate(${noPosition.x}px, ${noPosition.y}px)`,
+                                        transition: isNoHovered ? 'transform 0.2s ease-out' : 'none'
+                                    }}
+                                    className={`px-6 py-2 bg-gray-200 text-gray-500 rounded-full text-sm font-medium hover:bg-gray-300 transition-colors absolute bottom-0 ${isNoHovered ? '' : 'relative'}`}
+                                >
+                                    No
+                                </button>
+                            </div>
+                        )}
                     </>
                 )}
             </div>
-            <div className="mt-8 text-center opacity-40 text-sm">
-                Made with <Link href="/" className="underline hover:opacity-100">BeMyVal</Link>
+            <div className="mt-8 flex flex-col items-center gap-4">
+                <button
+                    onClick={handleShare}
+                    className="px-6 py-3 bg-white/80 rounded-full text-sm font-bold hover:bg-white transition shadow-lg backdrop-blur-sm flex items-center gap-2 text-rose-900 border-2 border-rose-200 hover:border-rose-300"
+                >
+                    <span>Share This Card</span>
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                    </svg>
+                </button>
+                <div className="text-center opacity-40 text-sm">
+                    Made with <Link href="/" className="underline hover:opacity-100">BeMyVal</Link>
+                </div>
             </div>
         </div>
     );

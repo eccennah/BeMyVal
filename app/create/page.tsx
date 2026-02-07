@@ -55,7 +55,7 @@ export default function CreateCard() {
 
             if (response.ok) {
                 const { id } = await response.json();
-                router.push(`/c/${id}`);
+                router.push(`/c/${id}?preview=true`);
             } else {
                 console.error('Failed to create card');
                 setIsSubmitting(false);
