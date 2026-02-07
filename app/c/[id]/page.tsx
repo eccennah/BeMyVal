@@ -117,7 +117,15 @@ export default function DynamicCardPage({ params }: { params: Promise<{ id: stri
     };
 
     return (
-        <div className={`min-h-screen flex flex-col items-center justify-center p-4 transition-colors duration-500 ${theme.bg}`}>
+        <div className={`min-h-screen flex flex-col items-center justify-center p-4 transition-colors duration-500 ${theme.bg} relative overflow-hidden`}>
+            {/* Floating Hearts Background */}
+            <div className="absolute inset-0 pointer-events-none overflow-hidden">
+                <div className="absolute top-10 left-10 text-4xl opacity-20 animate-float">💕</div>
+                <div className="absolute top-20 right-20 text-3xl opacity-15 animate-float-delayed">💖</div>
+                <div className="absolute bottom-32 left-1/4 text-5xl opacity-10 animate-sway">💗</div>
+                <div className="absolute top-1/3 right-1/3 text-2xl opacity-20 animate-float" style={{ animationDelay: '2s' }}>💝</div>
+                <div className="absolute bottom-20 right-10 text-4xl opacity-15 animate-float-delayed" style={{ animationDelay: '1.5s' }}>💘</div>
+            </div>
             <nav className="fixed top-0 left-0 w-full p-4 flex justify-between items-center z-10">
                 <Link href="/" className="bg-white/50 p-2 rounded-full hover:bg-white/80 transition shadow-sm backdrop-blur-sm">
                     <svg className={`w-6 h-6 ${theme.text}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -135,12 +143,12 @@ export default function DynamicCardPage({ params }: { params: Promise<{ id: stri
                 </button>
             </nav>
 
-            <div className={`w-full max-w-md p-8 md:p-12 rounded-3xl shadow-2xl border ${theme.card} text-center relative overflow-hidden transition-all duration-500`}>
+            <div className={`w-full max-w-md p-8 md:p-12 rounded-3xl shadow-2xl border ${theme.card} text-center relative overflow-hidden transition-all duration-500 animate-fade-in`} style={{ animationDelay: '0.2s' }}>
                 <div className={`absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-transparent via-${theme.accent.split('-')[1]}-400 to-transparent opacity-50`} />
 
                 {response === "yes" ? (
                     <div className="animate-in fade-in zoom-in duration-700 py-10">
-                        <div className="text-6xl mb-6">💖</div>
+                        <div className="text-6xl mb-6 animate-pulse">💖</div>
                         <h1 className={`text-4xl md:text-5xl font-serif font-bold ${theme.accent} mb-4`}>
                             YAAAY!
                         </h1>
@@ -150,7 +158,7 @@ export default function DynamicCardPage({ params }: { params: Promise<{ id: stri
                     </div>
                 ) : (
                     <>
-                        <div className="mb-8">
+                        <div className="mb-8 animate-fade-in" style={{ animationDelay: '0.3s' }}>
                             <span className={`inline-block py-1 px-3 rounded-full text-xs font-bold uppercase tracking-widest mb-4 opacity-60 border ${theme.text} ${theme.text}`}>
                                 A Special Question
                             </span>
@@ -159,11 +167,11 @@ export default function DynamicCardPage({ params }: { params: Promise<{ id: stri
                             </h1>
                         </div>
 
-                        <p className={`text-lg md:text-xl leading-relaxed whitespace-pre-wrap mb-10 ${theme.text} font-medium opacity-90`}>
+                        <p className={`text-lg md:text-xl leading-relaxed whitespace-pre-wrap mb-10 ${theme.text} font-medium opacity-90 animate-fade-in`} style={{ animationDelay: '0.5s' }}>
                             {cardData.message}
                         </p>
 
-                        <div className="flex flex-col gap-4 items-center justify-center relative h-32">
+                        <div className="flex flex-col gap-4 items-center justify-center relative h-32 animate-fade-in" style={{ animationDelay: '0.7s' }}>
                             <button
                                 onClick={handleYes}
                                 className={`px-10 py-4 ${theme.button} ${theme.buttonText} rounded-full text-xl font-bold shadow-lg transform hover:scale-110 active:scale-95 transition-all duration-200 z-10 w-full md:w-auto`}
