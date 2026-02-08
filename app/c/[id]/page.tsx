@@ -116,7 +116,6 @@ export default function DynamicCardPage({ params }: { params: Promise<{ id: stri
 
     const handleShare = () => {
         navigator.clipboard.writeText(window.location.href);
-        alert("Link copied to clipboard!");
     };
 
     return (
