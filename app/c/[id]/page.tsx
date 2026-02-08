@@ -43,6 +43,8 @@ export default function DynamicCardPage({ params }: { params: Promise<{ id: stri
     const [response, setResponse] = useState<"pending" | "yes">("pending");
     const [noPosition, setNoPosition] = useState({ x: 0, y: 0 });
     const [isNoHovered, setIsNoHovered] = useState(false);
+    const [showShareModal, setShowShareModal] = useState(false);
+    const [copied, setCopied] = useState(false);
 
     useEffect(() => {
         if (id) {
@@ -115,7 +117,19 @@ export default function DynamicCardPage({ params }: { params: Promise<{ id: stri
     };
 
     const handleShare = () => {
-        navigator.clipboard.writeText(window.location.href);
+        setShowShareModal(true);
+    };
+
+    const getShareableLink = () => {
+        const url = new URL(window.location.href);
+        url.searchParams.delete('preview');
+        return url.toString();
+    };
+
+    const copyShareLink = () => {
+        navigator.clipboard.writeText(getShareableLink());
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
     };
 
     return (
@@ -196,6 +210,35 @@ export default function DynamicCardPage({ params }: { params: Promise<{ id: stri
                     </>
                 )}
             </div>
+            {/* Share Modal */}
+            {showShareModal && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowShareModal(false)}>
+                    <div className="bg-white rounded-2xl p-6 md:p-8 max-w-md w-full shadow-2xl" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="text-xl font-bold text-rose-900">Share Your Card</h3>
+                            <button onClick={() => setShowShareModal(false)} className="text-gray-400 hover:text-gray-600">
+                                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                        <p className="text-sm text-gray-600 mb-4">Copy this link and send it to your valentine!</p>
+                        <div className="bg-rose-50 border border-rose-200 rounded-lg p-3 mb-4 break-all text-sm text-rose-900">
+                            {getShareableLink()}
+                        </div>
+                        <button
+                            onClick={copyShareLink}
+                            className={`w-full py-3 rounded-lg font-bold transition-all ${copied
+                                    ? 'bg-green-500 text-white'
+                                    : 'bg-rose-600 text-white hover:bg-rose-700'
+                                }`}
+                        >
+                            {copied ? '✓ Copied!' : 'Copy Link'}
+                        </button>
+                    </div>
+                </div>
+            )}
+
             <div className="mt-8 flex flex-col items-center gap-4">
                 <button
                     onClick={handleShare}
